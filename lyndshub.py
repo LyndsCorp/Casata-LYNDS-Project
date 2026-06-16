@@ -9,8 +9,8 @@ from datetime import datetime
 from pathlib import Path
 import webbrowser
 
-DATA_ROOT = Path("/usr/local/casata/apps/lyndshub")
-
+DATA_ROOT = Path("/usr/local/LyndsHub")
+# /usr/local/casata/apps/lyndshub
 
 def load_json(relative_path: str) -> dict | list:
     full_path = DATA_ROOT / relative_path
@@ -28,13 +28,31 @@ def load_json(relative_path: str) -> dict | list:
 # ─────────────────────────────────────────────────────────
 #  VALORES RUNTIME DISPONIBLES PARA osinfo.json
 # ─────────────────────────────────────────────────────────
+def _get_os_release_info() -> dict:
+    info = {}
+    try:
+        with open("/etc/os-release", "r", encoding="utf-8") as f:
+            for line in f:
+                if "=" in line:
+                    key, value = line.strip().split("=", 1)
+                    info[key] = value.replace('"', '')
+    except FileNotFoundError:
+        pass
+    return info
+
 def _runtime_values() -> dict:
     u = platform.uname()
     pv = sys.version.split(" ")[0]
+
+    # Obtenemos la info del sistema operativo
+    os_rel = _get_os_release_info()
+    # Usamos PRETTY_NAME o NAME como prioridad, si no, lo que dé el kernel
+    os_name = os_rel.get("PRETTY_NAME") or os_rel.get("NAME") or u.system
+
     return {
-        "os.system":          u.system    or "—",
-        "os.node":            u.node      or "—",
-        "os.release":         u.release   or "—",
+        "os.system":          os_name or "—",
+        "os.node":            u.node  or "—",
+        "os.release":         u.release or "—",
         "os.version":         u.version   or "—",
         "os.machine":         u.machine   or "—",
         "os.processor":       u.processor or platform.processor() or "—",
