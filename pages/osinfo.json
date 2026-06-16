@@ -1,7 +1,7 @@
 {
   "topbar": {
-    "title": "Información de LyndsDev",
-    "subtitle": "Información completa del sistema"
+    "title": "Información del sistema operativo",
+    "subtitle": "Información del sistema"
   },
 
   "timestamp_format": "%Y-%m-%d %H:%M:%S",
@@ -12,7 +12,15 @@
       "rows": [
         {
           "key": "Sistema Operativo",
-          "value": "LyndsOS"
+          "value": "$runtime.os.system"
+        },
+        {
+          "key": "Versión",
+          "value": "1.0.0"
+        },
+        {
+          "key": "Codename de la versión",
+          "value": "Light"
         },
         {
           "key": "Hostname",
@@ -21,14 +29,6 @@
         {
           "key": "Kernel",
           "value": "$runtime.os.release"
-        },
-        {
-          "key": "Versión",
-          "value": "1.0.0"
-        },
-                {
-          "key": "Codename de la versión",
-          "value": "Light"
         },
         {
           "key": "Arquitectura",
