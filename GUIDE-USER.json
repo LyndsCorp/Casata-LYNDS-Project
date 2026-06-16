@@ -1,0 +1,10 @@
+{
+  "links": [
+    {
+      "file": "lyndsfetch.sh",
+      "dest": "~/.local/bin",
+      "name": "lyndsfetch",
+      "executable": true
+    }
+  ]
+}
