@@ -9,8 +9,8 @@
       "role":    "Fundador",
       "initial": "DB",
       "color":   "green",
-      "bio":     "Sin él en LyndsCorp, la empresa entraría en kernel panic. Creó LyndsOS desde LyndsLite con tan solo 13 años. Cuando tenía 12 años, creó el proyecto Monojo que implementará en LyndsOS.",
-      "skills":  ["Free Software", "LyndsOS", "Sistemas", "Líder"]
+      "bio":     "Sin él, Lynds Corp. entraría en "kernel panic". Creó LyndsOS desde LyndsLite y el Proyecto Monojo que implementaría en LyndsOS y LyndsGO. Es el más dedicado en el proyecto.",
+      "skills":  ["Free Software", "Sysadmin", "Líder"]
     },
     {
       "name":    "Anxo Torres Álvarez",
@@ -37,9 +37,9 @@
       "skills":  ["Assets", "Testing", "Apoyo"]
     }
   ],
-  "project_section_title": "Información del Proyecto",
+  "project_section_title": "Información del Proyecto de LyndsOS, LyndsGO y LyndsLite",
   "project": [
-    { "label": "Proyecto",      "value": "LyndsOS"          },
+    { "label": "Proyecto",      "value": "LyndsOS Project"          },
     { "label": "Versión",       "value": "1.0.0"             },
     { "label": "Licencia",      "value": "GPL — Free Software" },
     { "label": "Construido con:","value": "Debian 13 y KDE Plasma 6"  }
