@@ -9,7 +9,7 @@
       "role":    "Fundador",
       "initial": "DB",
       "color":   "green",
-      "bio":     "Sin él, Lynds Corp. entraría en "kernel panic". Creó LyndsOS desde LyndsLite y el Proyecto Monojo que implementaría en LyndsOS y LyndsGO. Es el más dedicado en el proyecto.",
+      "bio":     "Sin él, Lynds Corp. entraría en 'kernel panic'. Creó LyndsOS desde LyndsLite y el Proyecto Monojo que implementaría en LyndsOS y LyndsGO. Es el más dedicado en el proyecto.",
       "skills":  ["Free Software", "Sysadmin", "Líder"]
     },
     {
