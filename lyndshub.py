@@ -27,15 +27,22 @@ def load_json(relative_path: str) -> dict | list:
 # ─────────────────────────────────────────────────────────
 #  VALORES RUNTIME DISPONIBLES PARA osinfo.json
 # ─────────────────────────────────────────────────────────
-def _get_os_release_info() -> dict:
+def get_os_metadata() -> dict:
+    """Busca info en osinfo.json (local) o /etc/os-release (sistema)."""
+    # 1. Intentar leer configuración local (tu archivo en DATA_ROOT)
+    local_info = load_json("pages/osinfo.json")
+    if local_info:
+        return local_info
+
+    # 2. Si no hay local, leer sistema estándar
     info = {}
     try:
-        with open("/etc/os-release", "r", encoding="utf-8") as f:
+        with open("/etc/os-release", "r") as f:
             for line in f:
                 if "=" in line:
-                    key, value = line.strip().split("=", 1)
-                    info[key] = value.replace('"', '')
-    except FileNotFoundError:
+                    k, v = line.strip().split("=", 1)
+                    info[k.lower()] = v.replace('"', '')
+    except:
         pass
     return info
 
@@ -43,26 +50,35 @@ def _runtime_values() -> dict:
     u = platform.uname()
     pv = sys.version.split(" ")[0]
 
-    # Obtenemos la info del sistema operativo
-    os_rel = _get_os_release_info()
-    # Usamos PRETTY_NAME o NAME como prioridad, si no, lo que dé el kernel
-    os_name = os_rel.get("PRETTY_NAME") or os_rel.get("NAME") or u.system
+    # Intentamos obtener datos, pero si algo falla, devolvemos valores por defecto
+    try:
+        # Intentar leer desde tu archivo local si existe
+        os_data = load_json("pages/osinfo.json")
+        name = os_data.get("os-name", "LyndsOS")
+        version = os_data.get("os-version", "1.0.0")
+        codename = os_data.get("os-codename", "Casata-Edition")
+    except:
+        # Si el JSON falla, usamos los valores del sistema o genéricos
+        name = u.system
+        version = u.release
+        codename = "—"
 
     return {
-        "os.system":          os_name or "—",
-        "os.node":            u.node  or "—",
-        "os.release":         u.release or "—",
-        "os.version":         u.version   or "—",
-        "os.machine":         u.machine   or "—",
-        "os.processor":       u.processor or platform.processor() or "—",
-        "python.version":     pv,
-        "python.impl":        platform.python_implementation(),
-        "python.compiler":    platform.python_compiler(),
-        "python.arch":        " / ".join(platform.architecture()),
-        "session.platform":   platform.platform(),
-        "session.timestamp":  None,
-        "session.app":        None,
-        "session.license":    None,
+        "os.system":    name or "—",
+        "os.node":      u.node or "—",
+        "os.release":   version or "—",
+        "os.version":   u.version or "—",
+        "os.codename":  codename or "—",
+        "os.machine":   u.machine or "—",
+        "os.processor": u.processor or platform.processor() or "—",
+        "python.version": pv,
+        "python.impl":  platform.python_implementation(),
+        "python.compiler": platform.python_compiler(),
+        "python.arch":  " / ".join(platform.architecture()),
+        "session.platform": platform.platform(),
+        "session.timestamp": None,
+        "session.app": None,
+        "session.license": None,
     }
 
 
