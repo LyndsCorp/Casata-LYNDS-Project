@@ -1,20 +1,26 @@
 {
   "links": [
     {
-      "file": "lyndshub.py",
+      "file": "lynds_wallpapers_installer_go.py",
       "dest": "~/.local/bin",
-      "name": "lyndshub",
+      "name": "lynds-wallpapers-installer-go",
+      "executable": true
+    },
+    {
+      "file": "lynds_wallpapers_installer_go.py",
+      "dest": "~/.local/bin",
+      "name": "lynds-wallpapers-go",
       "executable": true
     },
     {
       "file": "icon.png",
       "dest": "~/.local/share/icons/LyndsOS",
-      "name": "lyndshub.png"
+      "name": "lynds-wallpapers.png"
     },
     {
-      "file": "lyndshub.desktop",
+      "file": "lynds_wallpapers_installer_go.desktop",
       "dest": "~/.local/share/applications",
-      "name": "lyndshub.desktop"
+      "name": "lynds_wallpapers_installer_go.desktop"
     }
   ]
 }
