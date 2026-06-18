@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Lynds Wallpapers
-Comment=Descargar fondos de pantalla libres
+Name=Lynds Wallpapers Installer GO
+Comment=Descargar fondos de pantalla libres para GNOME
 Exec=lynds-wallpapers-installer
-Icon=/usr/local/casata/apps/lynds-wallpapers-installer/icon.png
+Icon=/usr/local/casata/apps/lynds-wallpapers-installer-go/icon.png
 Terminal=false
 Categories=Graphics;Utility;
 StartupNotify=true
