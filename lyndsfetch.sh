@@ -20,7 +20,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     if [[ "$OS_ID" == *"lyndsos"* || "$OS_NAME" == *"lyndsos"* ]]; then
         DEFAULT_LOGO="lyndsos"
         DEFAULT_COLOR="green"
-    elif [[ "$OS_ID" == *"lyndsgo* || "$OS_NAME" == *"lyndsgo"* ]]; then
+    elif [[ "$OS_ID" == *"lyndsgo"* || "$OS_NAME" == *"lyndsgo"* ]]; then
         DEFAULT_LOGO="lyndsgo-enter"
         DEFAULT_COLOR="magenta"
     elif [[ "$OS_ID" == *"debian"* || "$OS_NAME" == *"debian"* ]]; then
