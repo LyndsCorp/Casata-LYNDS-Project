@@ -66,12 +66,12 @@ class LyndsExecutive(tk.Tk):
         self.session_raw = {}
         self.session_thumbs = {}
 
-        self.c_bg       = "#0a0c0a"
-        self.c_side     = "#0f110f"
-        self.c_neon     = "#22c55e"
-        self.c_neon_dim = "#155e27"
+        self.c_bg       = "#0a0a0c"
+        self.c_side     = "#0f0f12"
+        self.c_neon     = "#8b5cf6"
+        self.c_neon_dim = "#4c1d95"
         self.c_text     = "#e2e8f0"
-        self.c_btn      = "#142618"
+        self.c_btn      = "#1a1025"
         self.c_alert    = "#ef4444"
         self.c_alert_bg = "#271414"
 
