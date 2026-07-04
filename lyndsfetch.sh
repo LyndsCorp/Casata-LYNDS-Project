@@ -39,9 +39,9 @@ case "$1" in
         echo "Módulos disponibles (se pueden incluir en la configuración):"
         echo "  user, host, hora, date, separator, colours, colors,"
         echo "  os, arch, kernel, uptime, shell, terminal, pkgs,"
-        echo "  de, wm, display-manager, theme, locale, resolution,"
+        echo "  display-manager, theme, locale, resolution,"
         echo "  cpu, gpu, ram, swap, disk, battery, local-ip, apt-updates,"
-        echo "  cpu-temperature, gpu-temperature, session-type, session,"
+        echo "  cpu-temperature, gpu-temperature, session,"
         echo "  os-codename, os-version, os-based, ram-type,"
         echo "  casata-version, casata-int-apps, casata-apps, global-ip"
         exit 0
@@ -128,7 +128,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "Modulos existentes para usar (puedes borrar esta parte)": [
         "user", "host", "hora", "date", "separator", "colours", "colors",
         "os", "arch", "kernel", "uptime", "shell", "terminal", "pkgs",
-        "de", "wm", "display-manager", "theme", "locale", "resolution",
+        "display-manager", "theme", "locale", "resolution",
         "cpu", "gpu", "ram", "swap", "disk", "battery", "local-ip", "apt-updates",
         "cpu-temperature", "gpu-temperature", "session-type", "session",
         "os-codename", "os-version", "os-based", "ram-type",
@@ -176,9 +176,6 @@ BOLD='\x1b[1m'
 GREEN='\x1b[32m'
 YELLOW='\x1b[33m'
 RED='\x1b[31m'
-
-# --- DECLARACIÓN DE LOGOS (se mantienen todos los logos anteriores) ---
-declare -a logo
 
 if [ "$LOGO_SELECTION" == "lyndsos-logo" ]; then
     mapfile -t logo << "EOF"
@@ -566,14 +563,14 @@ EOF
 
 elif [ "$LOGO_SELECTION" == "nyarch" ]; then
     mapfile -t logo << "EOF"
-  _   _                      _     
- | \ | |                    | |    
- |  \| |_   _  __ _ _ __ ___| |__  
- | . ` | | | |/ _` | '__/ __| '_ \ 
+  _   _                      _
+ | \ | |                    | |
+ |  \| |_   _  __ _ _ __ ___| |__
+ | . ` | | | |/ _` | '__/ __| '_ \
  | |\  | |_| | (_| | | | (__| | | |
  |_| \_|\__, |\__,_|_|  \___|_| |_|
-         __/ |                     
-        |___/                      
+         __/ |
+        |___/
 EOF
 
 elif [ "$LOGO_SELECTION" == "i-use-nyarch-btw" ]; then
@@ -637,36 +634,36 @@ EOF
 
 elif [ "$LOGO_SELECTION" == "default" ]; then
     mapfile -t logo << "EOF"
-  _                     _     
- | |                   | |    
- | |    _   _ _ __   __| |___ 
+  _                     _
+ | |                   | |
+ | |    _   _ _ __   __| |___
  | |   | | | | '_ \ / _` / __|
  | |___| |_| | | | | (_| \__ \
  |______\__, |_| |_|\__,_|___/
-         __/ |                
-  ______|___/      _          
- |  ____| | |     | |         
- | |__ ___| |_ ___| |__       
- |  __/ _ \ __/ __| '_ \      
- | | |  __/ || (__| | | |     
- |_|  \___|\__\___|_| |_|    
+         __/ |
+  ______|___/      _
+ |  ____| | |     | |
+ | |__ ___| |_ ___| |__
+ |  __/ _ \ __/ __| '_ \
+ | | |  __/ || (__| | | |
+ |_|  \___|\__\___|_| |_|
 EOF
 
 else
     mapfile -t logo << "EOF"
-  _                     _     
- | |                   | |    
- | |    _   _ _ __   __| |___ 
+  _                     _
+ | |                   | |
+ | |    _   _ _ __   __| |___
  | |   | | | | '_ \ / _` / __|
  | |___| |_| | | | | (_| \__ \
  |______\__, |_| |_|\__,_|___/
-         __/ |                
-  ______|___/      _          
- |  ____| | |     | |         
- | |__ ___| |_ ___| |__       
- |  __/ _ \ __/ __| '_ \      
- | | |  __/ || (__| | | |     
- |_|  \___|\__\___|_| |_|     
+         __/ |
+  ______|___/      _
+ |  ____| | |     | |
+ | |__ ___| |_ ___| |__
+ |  __/ _ \ __/ __| '_ \
+ | | |  __/ || (__| | | |
+ |_|  \___|\__\___|_| |_|
 EOF
 fi
 
@@ -731,38 +728,19 @@ get_info() {
                 info_val="Desconocido"
             fi
             ;;
-        de)
-            info_label="DE"
-            info_val="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
-            [ -z "$info_val" ] && info_val="No detectado"
-            ;;
-        wm)
-            info_label="WM"
-            # Intentar detectar el gestor de ventanas
-            if command -v wmctrl &>/dev/null && [ -n "$DISPLAY" ]; then
-                info_val=$(wmctrl -m 2>/dev/null | grep "Name:" | cut -d: -f2 | xargs)
-            fi
-            if [ -z "$info_val" ]; then
-                # Fallback para Wayland usando entornos conocidos
-                case "${XDG_CURRENT_DESKTOP,,}" in
-                    *gnome*)    info_val="Mutter" ;;
-                    *kde*)      info_val="KWin" ;;
-                    *xfce*)     info_val="Xfwm4" ;;
-                    *lxqt*)     info_val="Openbox" ;;
-                    *sway*)     info_val="Sway" ;;
-                    *hyprland*) info_val="Hyprland" ;;
-                    *budgie*)   info_val="Budgie WM" ;;
-                    *cinnamon*) info_val="Muffin" ;;
-                    *mate*)     info_val="Marco" ;;
-                    *)          info_val="No detectado" ;;
-                esac
-            fi
-            ;;
         display-manager)
             info_label="Login (DM)"
             dm=$(basename "$(cat /etc/X11/default-display-manager 2>/dev/null)" 2>/dev/null)
             [ -z "$dm" ] && dm=$(pgrep -l -x 'sddm|gdm|gdm3|lightdm|lxdm|xdm' | awk '{print $2}' | head -n 1)
             [ -z "$dm" ] && dm="No detectado"
+            # Capitalizar correctamente los DMs conocidos
+            case "$dm" in
+                sddm)    dm="SDDM" ;;
+                gdm|gdm3) dm="GDM" ;;
+                lightdm) dm="LightDM" ;;
+                lxdm)    dm="LXDM" ;;
+                xdm)     dm="XDM" ;;
+            esac
             info_val="$dm"
             ;;
         theme)
@@ -900,7 +878,7 @@ get_info() {
             fi
             [ "$gpu_temp" = "N/A" ] && info_val="No disponible" || info_val="$gpu_temp"
             ;;
-        session-type)
+        session-type|session)
             info_label="Servidor Gráfico"
             session="${XDG_SESSION_TYPE}"
             if [ -z "$session" ]; then
@@ -911,6 +889,13 @@ get_info() {
                 else
                     session="No detectada"
                 fi
+            else
+                # Normalizar a mayúsculas correctas
+                session=$(echo "$session" | tr '[:upper:]' '[:lower:]')
+                case "$session" in
+                    wayland) session="Wayland" ;;
+                    x11|xorg) session="X11" ;;
+                esac
             fi
             info_val="$session"
             ;;
