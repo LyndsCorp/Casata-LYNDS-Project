@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Desarrollado por David Baña Szymaniak. Licencia GPL v3, LYNDS Project
-# Version 1.2.3
+# Version 1.2.4
 
 # Ruta del archivo de configuración
 CONFIG_FILE="$HOME/.config/LyndsFetch/config.json"
