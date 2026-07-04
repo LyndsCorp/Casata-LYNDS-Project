@@ -7,6 +7,10 @@ CONFIG_FILE="$HOME/.config/LyndsFetch/config.json"
 
 # --- GESTIÓN DE ARGUMENTOS ---
 case "$1" in
+    -v|--version)
+        cat /usr/local/casata/apps/lyndsfetch/VERSION
+        exit 0
+        ;;
     -h|--help|--ayuda)
         echo "LyndsFetch - Herramienta de información del sistema"
         echo "Uso: $0 [opciones]"
@@ -37,9 +41,9 @@ case "$1" in
         echo "Módulos disponibles (se pueden incluir en la configuración):"
         echo "  user, host, hora, date, separator, colours, colors,"
         echo "  os, arch, kernel, uptime, shell, terminal, pkgs,"
-        echo "  de, wm, display_manager, theme, locale, resolution,"
+        echo "  de_wm, de, wm, display_manager, theme, locale, resolution,"
         echo "  cpu, gpu, ram, swap, disk, battery, local_ip, apt_updates,"
-        echo "  cpu_temperature, gpu_temperature, session_type,"
+        echo "  cpu_temperature, gpu_temperature, session_type, session,"
         echo "  os_codename, os_version, os_based, ram-type, ram_type,"
         echo "  casata-version, casata-int-apps, casata-apps"
         exit 0
@@ -110,19 +114,19 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "kernel",
         "uptime",
         "separator",
-        "de",
-        "wm",
+        "de_wm",
         "display_manager",
         "separator",
         "cpu",
+        "gpu",
         "ram"
     ],
     "available_modules": [
         "user", "host", "hora", "date", "separator", "colours", "colors",
         "os", "arch", "kernel", "uptime", "shell", "terminal", "pkgs",
-        "de", "wm", "display_manager", "theme", "locale", "resolution",
+        "de_wm", "de", "wm", "display_manager", "theme", "locale", "resolution",
         "cpu", "gpu", "ram", "swap", "disk", "battery", "local_ip", "apt_updates",
-        "cpu_temperature", "gpu_temperature", "session_type",
+        "cpu_temperature", "gpu_temperature", "session_type", "session",
         "os_codename", "os_version", "os_based", "ram-type", "ram_type",
         "casata-version", "casata-int-apps", "casata-apps"
     ]
@@ -165,6 +169,9 @@ case "$COLOR_SELECTION" in
 esac
 NC='\x1b[0m'
 BOLD='\x1b[1m'
+GREEN='\x1b[32m'
+YELLOW='\x1b[33m'
+RED='\x1b[31m'
 
 # --- DECLARACIÓN DE LOGOS (se mantienen todos los logos anteriores, omitidos por brevedad) ---
 declare -a logo
@@ -703,30 +710,32 @@ get_info() {
                 info_val="Desconocido"
             fi
             ;;
-        de)
+        de_wm | de)
             info_label="DE"
             info_val="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
             [ -z "$info_val" ] && info_val="No detectado"
             ;;
         wm)
             info_label="WM"
-            # Detectar el servidor gráfico (X11 o Wayland)
-            session="${XDG_SESSION_TYPE}"
-            if [ -z "$session" ]; then
-                if [ -n "$WAYLAND_DISPLAY" ]; then
-                    session="wayland"
-                elif [ -n "$DISPLAY" ]; then
-                    session="x11"
-                else
-                    session="desconocido"
-                fi
+            # Intentar detectar el gestor de ventanas
+            if command -v wmctrl &>/dev/null && [ -n "$DISPLAY" ]; then
+                info_val=$(wmctrl -m 2>/dev/null | grep "Name:" | cut -d: -f2 | xargs)
             fi
-            # Normalizar a "X11" o "Wayland"
-            case "$session" in
-                x11|X11) info_val="X11" ;;
-                wayland|Wayland) info_val="Wayland" ;;
-                *) info_val="Desconocido" ;;
-            esac
+            if [ -z "$info_val" ]; then
+                # Fallback para Wayland usando entornos conocidos
+                case "${XDG_CURRENT_DESKTOP,,}" in
+                    *gnome*)    info_val="Mutter" ;;
+                    *kde*)      info_val="KWin" ;;
+                    *xfce*)     info_val="Xfwm4" ;;
+                    *lxqt*)     info_val="Openbox" ;;
+                    *sway*)     info_val="Sway" ;;
+                    *hyprland*) info_val="Hyprland" ;;
+                    *budgie*)   info_val="Budgie WM" ;;
+                    *cinnamon*) info_val="Muffin" ;;
+                    *mate*)     info_val="Marco" ;;
+                    *)          info_val="No detectado" ;;
+                esac
+            fi
             ;;
         display_manager)
             info_label="Login (DM)"
@@ -737,7 +746,14 @@ get_info() {
             ;;
         theme)
             info_label="Tema"
-            if [ -f ~/.config/kdeglobals ]; then
+            info_val=""
+            # Intentar obtener tema según el entorno
+            if [[ "${XDG_CURRENT_DESKTOP,,}" =~ (gnome|ubuntu.*gnome) ]]; then
+                if command -v gsettings &>/dev/null; then
+                    info_val=$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null | tr -d "'")
+                fi
+                [ -z "$info_val" ] && info_val=$(grep 'gtk-theme-name=' ~/.config/gtk-3.0/settings.ini 2>/dev/null | cut -d'=' -f2)
+            elif [ -f ~/.config/kdeglobals ]; then
                 info_val=$(grep '^ColorScheme=' ~/.config/kdeglobals | head -n 1 | cut -d'=' -f2)
             fi
             [ -z "$info_val" ] && info_val="Default"
@@ -768,13 +784,27 @@ get_info() {
         swap)
             info_label="Swap"
             info_val=$(free -h | awk '/Swap:/ {print $3 " / " $2}')
-            if [[ "$info_val" == *"0B / 0B"* || "$info_val" == *"0.0 B"* ]]; then
-                return 0
+            if [[ "$info_val" == *"0B / 0B"* || "$info_val" == *"0.0 B"* || -z "$info_val" ]]; then
+                info_val="No configurada"
             fi
             ;;
         disk)
             info_label="Disco (/)"
-            info_val=$(df -h / | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
+            used=$(df -h / | awk 'NR==2 {print $3}')
+            size=$(df -h / | awk 'NR==2 {print $2}')
+            percent=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
+            if [ -n "$percent" ]; then
+                if [ "$percent" -lt 70 ]; then
+                    color_percent="$GREEN"
+                elif [ "$percent" -lt 90 ]; then
+                    color_percent="$YELLOW"
+                else
+                    color_percent="$RED"
+                fi
+                info_val="${used} / ${size} (${color_percent}${percent}%${NC})"
+            else
+                info_val="${used} / ${size} (desconocido)"
+            fi
             ;;
         battery)
             bat_path=$(ls -d /sys/class/power_supply/BAT* 2>/dev/null | head -n 1)
@@ -816,15 +846,14 @@ get_info() {
                     fi
                 fi
             done
-            info_val="${cpu_temp}"
+            [ "$cpu_temp" = "N/A" ] && info_val="No disponible" || info_val="$cpu_temp"
             ;;
         gpu-temperature|gpu_temperature)
             info_label="Temp. GPU"
             gpu_temp="N/A"
             if command -v nvidia-smi &>/dev/null; then
-                gpu_temp=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null)
-                [ -z "$gpu_temp" ] && gpu_temp="N/A"
-                info_val="${gpu_temp}°C"
+                temp=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null)
+                [ -n "$temp" ] && gpu_temp="${temp}°C"
             else
                 for zone in /sys/class/thermal/thermal_zone*; do
                     if [ -f "$zone/type" ]; then
@@ -832,32 +861,28 @@ get_info() {
                         if [[ "$type" =~ (gpu|GPU|radeon|amdgpu|nvidia) ]]; then
                             temp_raw=$(cat "$zone/temp" 2>/dev/null)
                             if [ -n "$temp_raw" ]; then
-                                gpu_temp=$(( temp_raw / 1000 ))
+                                gpu_temp=$(( temp_raw / 1000 ))°C
                                 break
                             fi
                         fi
                     fi
                 done
-                info_val="${gpu_temp}°C"
             fi
+            [ "$gpu_temp" = "N/A" ] && info_val="No disponible" || info_val="$gpu_temp"
             ;;
-        session_type|wm_type)
-            info_label="Sesión"
+        session_type|session|servidor-grafico)
+            info_label="Servidor Gráfico"
             session="${XDG_SESSION_TYPE}"
             if [ -z "$session" ]; then
                 if [ -n "$WAYLAND_DISPLAY" ]; then
-                    session="wayland"
+                    session="Wayland"
                 elif [ -n "$DISPLAY" ]; then
-                    session="x11"
+                    session="X11"
                 else
                     session="No detectada"
                 fi
             fi
-            case "$session" in
-                x11|X11) info_val="X11" ;;
-                wayland|Wayland) info_val="Wayland" ;;
-                *) info_val="$session" ;;
-            esac
+            info_val="$session"
             ;;
         os-codename|os_codename)
             info_label="Código SO"
@@ -929,7 +954,7 @@ get_info() {
         casata-apps|casata_apps)
             info_label="Casata Apps"
             if [ -d /usr/local/casata/apps ]; then
-                apps=$(find /usr/local/casata/apps/ -maxdepth 1 -type d 2>/dev/null | tail -n +2 | xargs -I{} basename {} | tr '\n' ', ' | sed 's/, $//')
+                apps=$(find /usr/local/casata/apps/ -maxdepth 1 -type d 2>/dev/null | tail -n +2 | xargs -I{} basename {} | sed 's/ /, /g' | tr '\n' ',' | sed 's/,/, /g' | sed 's/, $//')
                 [ -z "$apps" ] && apps="Ninguna"
                 info_val="$apps"
             else
