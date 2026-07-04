@@ -37,7 +37,7 @@ case "$1" in
         echo "Módulos disponibles (se pueden incluir en la configuración):"
         echo "  user, host, hora, date, separator, colours, colors,"
         echo "  os, arch, kernel, uptime, shell, terminal, pkgs,"
-        echo "  de_wm, display_manager, theme, locale, resolution,"
+        echo "  de, wm, display_manager, theme, locale, resolution,"
         echo "  cpu, gpu, ram, swap, disk, battery, local_ip, apt_updates,"
         echo "  cpu_temperature, gpu_temperature, session_type,"
         echo "  os_codename, os_version, os_based, ram-type, ram_type,"
@@ -110,7 +110,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "kernel",
         "uptime",
         "separator",
-        "de_wm",
+        "de",
+        "wm",
         "display_manager",
         "separator",
         "cpu",
@@ -119,7 +120,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     "available_modules": [
         "user", "host", "hora", "date", "separator", "colours", "colors",
         "os", "arch", "kernel", "uptime", "shell", "terminal", "pkgs",
-        "de_wm", "display_manager", "theme", "locale", "resolution",
+        "de", "wm", "display_manager", "theme", "locale", "resolution",
         "cpu", "gpu", "ram", "swap", "disk", "battery", "local_ip", "apt_updates",
         "cpu_temperature", "gpu_temperature", "session_type",
         "os_codename", "os_version", "os_based", "ram-type", "ram_type",
@@ -702,10 +703,30 @@ get_info() {
                 info_val="Desconocido"
             fi
             ;;
-        de_wm)
-            info_label="DE/WM"
+        de)
+            info_label="DE"
             info_val="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
             [ -z "$info_val" ] && info_val="No detectado"
+            ;;
+        wm)
+            info_label="WM"
+            # Detectar el servidor gráfico (X11 o Wayland)
+            session="${XDG_SESSION_TYPE}"
+            if [ -z "$session" ]; then
+                if [ -n "$WAYLAND_DISPLAY" ]; then
+                    session="wayland"
+                elif [ -n "$DISPLAY" ]; then
+                    session="x11"
+                else
+                    session="desconocido"
+                fi
+            fi
+            # Normalizar a "X11" o "Wayland"
+            case "$session" in
+                x11|X11) info_val="X11" ;;
+                wayland|Wayland) info_val="Wayland" ;;
+                *) info_val="Desconocido" ;;
+            esac
             ;;
         display_manager)
             info_label="Login (DM)"
@@ -825,14 +846,18 @@ get_info() {
             session="${XDG_SESSION_TYPE}"
             if [ -z "$session" ]; then
                 if [ -n "$WAYLAND_DISPLAY" ]; then
-                    session="Wayland"
+                    session="wayland"
                 elif [ -n "$DISPLAY" ]; then
-                    session="X11"
+                    session="x11"
                 else
                     session="No detectada"
                 fi
             fi
-            info_val="$session"
+            case "$session" in
+                x11|X11) info_val="X11" ;;
+                wayland|Wayland) info_val="Wayland" ;;
+                *) info_val="$session" ;;
+            esac
             ;;
         os-codename|os_codename)
             info_label="Código SO"
