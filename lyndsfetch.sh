@@ -114,7 +114,6 @@ if [ ! -f "$CONFIG_FILE" ]; then
         "display_manager",
         "separator",
         "cpu",
-        "gpu",
         "ram"
     ],
     "available_modules": [
