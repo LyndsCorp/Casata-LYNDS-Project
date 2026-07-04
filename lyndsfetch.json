@@ -1,6 +1,6 @@
 {
   "name": "lyndsfetch",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "dependencies": ["jq"],
   "size": "29,8 KiB",
   "description": "LyndsFetch, decoración de terminal propia de LyndsOS/LyndsGO. Tiene información del sistema.",
