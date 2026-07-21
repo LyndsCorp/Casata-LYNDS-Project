@@ -1,7 +1,8 @@
 {
   "name": "lyndsfetch",
   "version": "1.2.6",
-  "dependencies": ["jq"],
+  "apt": ["jq"],
+  "pip": [],
   "size": "41,9 KiB",
   "description": "LyndsFetch, decoración de terminal propia de LyndsOS/LyndsGO. Tiene información del sistema.",
   "usage": "Ejecuta echo 'lyndsfetch' >> ~/.bashrc para añadirlo que se vea cada vez que abres la terminal."
