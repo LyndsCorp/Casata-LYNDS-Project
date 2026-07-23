@@ -8,7 +8,7 @@
     },
     {
       "file": "icon.png",
-      "dest": "/usr/share/icons/LyndsOS",
+      "dest": "/usr/share/icons/hicolor/512x512/apps",
       "name": "lyndshub.png"
     },
     {
