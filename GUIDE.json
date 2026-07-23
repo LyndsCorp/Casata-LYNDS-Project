@@ -14,7 +14,7 @@
     },
     {
       "file": "icon.png",
-      "dest": "/usr/share/icons/LyndsOS",
+      "dest": "/usr/share/icons/hicolor/256x256/apps",
       "name": "lynds-wallpapers-go.png"
     },
     {
