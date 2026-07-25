@@ -39,7 +39,7 @@ class LyndsExecutive(tk.Tk):
         self.configure(bg="#0a0c0a")
 
         try:
-            icon_img = tk.PhotoImage(file="/usr/share/icons/hicolor/256x256/appslynds-wallpapers.png")
+            icon_img = tk.PhotoImage(file="/usr/share/icons/hicolor/256x256/apps/lynds-wallpapers.png")
             self.iconphoto(False, icon_img)
         except Exception:
             pass
