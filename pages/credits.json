@@ -1,0 +1,47 @@
+{
+  "topbar": {
+    "title":    "Créditos",
+    "subtitle": "El equipo detrás de LyndsOS"
+  },
+  "team": [
+    {
+      "name":    "David Baña Szymaniak",
+      "role":    "Fundador",
+      "initial": "DB",
+      "color":   "green",
+      "bio":     "Sin él, Lynds Corp. entraría en 'kernel panic'. Creó LyndsOS desde LyndsLite y el Proyecto Monojo que implementaría en LyndsOS y LyndsGO. Es el más dedicado en el proyecto.",
+      "skills":  ["Free Software", "Sysadmin", "Líder"]
+    },
+    {
+      "name":    "Anxo Torres Álvarez",
+      "role":    "Maximum Programmer",
+      "initial": "AT",
+      "color":   "amber",
+      "bio":     "Trajo mucho humor y motivación al proyecto. Planificó muchas cosas sobre el futuro de Lynds.",
+      "skills":  ["Open Source", "Humor", "Python"]
+    },
+        {
+      "name":    "Nita",
+      "role":    "Apps",
+      "initial": "DB",
+      "color":   "pink",
+      "bio":     "",
+      "skills":  ["Open Source", "Aplicaciones", "Testing"]
+    },
+    {
+      "name":    "Alcasji",
+      "role":    "Apoyo Gráfico",
+      "initial": "AC",
+      "color":   "#3B82F6",
+      "bio":     "Responsable de algunos fondos de pantalla e iconos. Estuvo allí desde los inicios.",
+      "skills":  ["Assets", "Testing", "Apoyo"]
+    }
+  ],
+  "project_section_title": "Información del Proyecto de LyndsOS, LyndsGO y LyndsLite",
+  "project": [
+    { "label": "Proyecto",      "value": "LyndsOS Project"          },
+    { "label": "Versión",       "value": "1.26.08"             },
+    { "label": "Licencia",      "value": "GPL — Free Software" },
+    { "label": "Construido con:","value": "Debian 13 y KDE Plasma 6"  }
+  ]
+}
