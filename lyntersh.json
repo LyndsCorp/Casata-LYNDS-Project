@@ -1,0 +1,12 @@
+{
+  "name": "lyntersh",
+  "version": "1.0",
+  "apt": [],
+  "pacman": [],
+  "dnf": [,
+  "casata": [],
+  "pip": [],
+  "size": "35,9 KiB",
+  "description": "Lyntersh, Lynter pero para scripts de shell. Lynter es Lynds Interface.",
+  "usage": "Ejecuta lyntersh --help para recibir ayuda. Puedes crear diálogos gráficos para que el usuario ponga valores."
+}
